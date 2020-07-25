@@ -14,3 +14,6 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('posts/top', 'PostController@getTopPosts')->name('posts.top');
+Route::get('comments', 'CommentController@index')->name('comments.index');
