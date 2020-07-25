@@ -11,7 +11,7 @@ class Comment extends Model
     public function comments()
     {
         $client = new Client(); //GuzzleHttp\Client
-        $url = "https://jsonplaceholder.typicode.com/";
+        $url = config('app.api_url');
         $api_url = $url . 'comments' ;
         $params = [];
          
@@ -39,7 +39,7 @@ class Comment extends Model
             $filter = false;
             foreach ($params as $key => $value) {
                 if(!isset($comment->$key)) continue;
-                
+
                 if($key == 'id' || $key == 'postId')
                   $filter = is_array($value) ? in_array($value, $comment->$key) : $comment->$key == $value;
                 else

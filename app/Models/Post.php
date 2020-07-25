@@ -11,7 +11,7 @@ class Post extends Model
     public function posts()
     {
         $client = new Client(); //GuzzleHttp\Client
-        $url = "https://jsonplaceholder.typicode.com/";
+        $url = config('app.api_url');
         $api_url = $url . 'posts' ;
         $params = [];
          
@@ -44,17 +44,19 @@ class Post extends Model
         return json_decode( (string)$response->getBody() );
     }
 
-    public function topPosts()
+    public function topPosts($limit = 10)
     {
-        $posts = collect($this->posts())->keyBy('id');
-
         $comment = new Comment();
         $comments = $comment->comments();
-        $comments = $comment->totalCommentPerPost($comments);
 
-        return $posts->whereIn('id',array_keys($comments))->map(function($post) use($comments){
-            $post->total_number_of_comments = $comments[$post->id];
+        $posts = collect($this->posts())->keyBy('id');
+        $posts = $posts->map(function($post)use($comment,$comments){
+            $comments = $comment->filterComments($comments, ['postId'=>$post->id]);
+            $post->total_number_of_comments = $comments->count();
+
             return $post;
         });
+
+        return $posts->sortByDesc('total_number_of_comments')->take($limit);
     }
 }
