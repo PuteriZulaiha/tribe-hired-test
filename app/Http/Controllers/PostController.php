@@ -1,23 +1,24 @@
 <?php
-
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Post;
+use App\Repositories\PostRepository;
+use App\Http\Requests\ValidatePost;
+use App\Http\Resources\TopPostResource;
 
 class PostController extends Controller
 {
-    public function __construct(Post $post)
+    public function __construct(PostRepository $post)
     {
         $this->post = $post;
     }
 
-    public function getTopPosts()
+    public function getTopPosts(ValidatePost $request)
     {
-        $data = $this->post->topPosts();
+        $validated = $request->validated();
+        $data = $this->post->topPosts($validated);
 
-        return $data;
+        return TopPostResource::collection($data);
     }
 }
