@@ -1,16 +1,15 @@
 <?php
-
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Repositories\CommentRepository;
+use App\Http\Resources\CommentResource;
 use App\Http\Requests\ValidateComment;
-use App\Models\Comment;
 
 class CommentController extends Controller
 {
-    public function __construct(Comment $comment)
+    public function __construct(CommentRepository $comment)
     {
         $this->comment = $comment;
     }
@@ -24,6 +23,6 @@ class CommentController extends Controller
         if(!empty($validated))
           $comments = $this->comment->filterComments($comments, $validated);
 
-        return $comments;
+        return CommentResource::collection($comments);
     }
 }
